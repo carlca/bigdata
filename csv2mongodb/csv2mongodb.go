@@ -28,7 +28,7 @@ func main() {
 	e.CheckError(err)
 	fileSize := fileInfo.Size()
 	// create counting reader
-	cr := &e.CountingReader{reader: csvFile}
+	cr := &e.CountingReader{Reader: csvFile}
 	reader := csv.NewReader(cr)
 	recordCount := 0
 	// establish MongoDB session
