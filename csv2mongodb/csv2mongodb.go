@@ -36,6 +36,12 @@ func main() {
 	e.CheckError(err)
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
+	// skip first row
+	_, err = reader.Read()
+	// create MongoDB collection
+	collection := session.DB("Companies").C("Companies")
+	// empty
+	collection.RemoveAll(nil)
 	// read loop
 	for {
 		recordCount++
@@ -52,14 +58,10 @@ func main() {
 		}
 		// print bytesRead / fileSize
 		p.Printf("\r%d / %d", cr.BytesRead, fileSize)
-		// create MongoDB collection
-		collection := session.DB("Companies").C("Companies")
-		// empty
-		collection.RemoveAll(nil)
 		// insert data into MongoDB
 		doc := &c.Company{}
 		elem := reflect.ValueOf(doc).Elem()
-		for index := 0; index < elem.NumMethod(); index++ {
+		for index := 0; index < elem.NumField(); index++ {
 			elem.Field(index).SetString(record[index])
 		}
 		err = collection.Insert(doc)
