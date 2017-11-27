@@ -26,20 +26,41 @@ func main() {
 	p.Printf("Record count for Companies: %d\n", count)
 	// read subset of collection
 	var companies []c.Company
-	coll.Find(bson.M{}).Limit(20).All(&companies)
+	coll.Find(bson.M{}).Limit(200).All(&companies)
 	//fmt.Println(companies)
 	for _, company := range companies {
 		if company.CompanyName != "" {
 			fmt.Println(company.CompanyName)
 		}
-		if company.AddressLine1 != "" {
-			fmt.Println(company.AddressLine1)
+		// if company.AddressLine1 != "" {
+		// 	fmt.Println(company.AddressLine1)
+		// }
+		// if company.AddressLine2 != "" {
+		// 	fmt.Println(company.AddressLine2)
+		// }
+		// if company.PostCode != "" {
+		// 	fmt.Println(company.PostCode)
+		// }
+		// if company.CompanyCategory != "" {
+		// 	fmt.Println(company.CompanyCategory)
+		// }
+		// if company.CompanyStatus != "" {
+		// 	fmt.Println(company.CompanyStatus)
+		// }
+		// if company.CountryofOrigin != "" {
+		// 	fmt.Println(company.CountryofOrigin)
+		// }
+		if company.SICCode1 != "" {
+			fmt.Println(company.SICCode1)
 		}
-		if company.AddressLine2 != "" {
-			fmt.Println(company.AddressLine2)
+		if company.SICCode2 != "" {
+			fmt.Println(company.SICCode2)
 		}
-		if company.PostCode != "" {
-			fmt.Println(company.PostCode)
+		if company.SICCode3 != "" {
+			fmt.Println(company.SICCode3)
+		}
+		if company.SICCode4 != "" {
+			fmt.Println(company.SICCode4)
 		}
 		fmt.Println("")
 	}
