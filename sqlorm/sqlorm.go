@@ -36,4 +36,5 @@ func main() {
 	for _, column := range schema.Columns {
 		fmt.Println(column)
 	}
+	fmt.Println()
 }
