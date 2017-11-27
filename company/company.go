@@ -1,38 +1,38 @@
 package company
 
-// Company struct
+// Company struct - unfinished
 type Company struct {
 	// Details
-	CompanyName   string `bson:"companyname,omitempty"`   // 160
-	CompanyNumber string `bson:"companynumber,omitempty"` // 8
-	Careof        string `bson:"careof,omitempty"`        // 100
-	POBox         string `bson:"pobox,omitempty"`         // 10
-	AddressLine1  string `bson:"addressline1,omitempty"`  // (HouseNumber and Street) 300
-	AddressLine2  string `bson:"addressline2,omitempty"`  // (area) 300
-	PostTown      string `bson:"posttown,omitempty"`      // 50
-	County        string `bson:"county,omitempty"`        // (region) 50
-	Country       string `bson:"country,omitempty"`       // 50
-	PostCode      string `bson:"postcode,omitempty"`      // 10
+	CompanyName   string `bson:"companyname,omitempty" sql:"nvarchar 160"`
+	CompanyNumber string `bson:"companynumber,omitempty" sql:"nvarchar 8"`
+	Careof        string `bson:"careof,omitempty" sql:"nvarchar 100"`
+	POBox         string `bson:"pobox,omitempty" sql:"nvarchar 10"`
+	AddressLine1  string `bson:"addressline1,omitempty" sql:"nvarchar 300"`
+	AddressLine2  string `bson:"addressline2,omitempty" sql:"nvarchar 300"`
+	PostTown      string `bson:"posttown,omitempty" sql:"lookup 50"`
+	County        string `bson:"county,omitempty" sql:"lookup 50"`
+	Country       string `bson:"country,omitempty" sql:"lookup 50"`
+	PostCode      string `bson:"postcode,omitempty" sql:"nvarchar 10"`
 	// Corporate
-	CompanyCategory   string `bson:"companycategory,omitempty"`   // (corporate_body_type_desc) 100
-	CompanyStatus     string `bson:"companystatus,omitempty"`     // (action_code_desc) 70
-	CountryofOrigin   string `bson:"countryoforigin,omitempty"`   // 50
-	DissolutionDate   string `bson:"dissolutiondate,omitempty"`   // 10
-	IncorporationDate string `bson:"incorporationdate,omitempty"` // 10
+	CompanyCategory   string `bson:"companycategory,omitempty" sql:"lookup 100"`
+	CompanyStatus     string `bson:"companystatus,omitempty" sql:"lookup 70"`
+	CountryofOrigin   string `bson:"countryoforigin,omitempty" sql:"lookup 50"`
+	DissolutionDate   string `bson:"dissolutiondate,omitempty" sql:"date"`
+	IncorporationDate string `bson:"incorporationdate,omitempty" sql:"date"`
 	// Accounts
-	AccountingRefDay       string `bson:"accountingrefday,omitempty"`       // 2
-	AccountingRefMonth     string `bson:"accountingrefmonth,omitempty"`     // 2
-	AccountsNextDueDate    string `bson:"accountsnextduedate,omitempty"`    // 10
-	AccountsNextMadeUpDate string `bson:"accountsnextmadeupdate,omitempty"` // 10
-	AccountsCategory       string `bson:"accountscategory,omitempty"`       // (accounts_type_desc) 30
+	AccountingRefDay       string `bson:"accountingrefday,omitempty" sql:"tinyint"`
+	AccountingRefMonth     string `bson:"accountingrefmonth,omitempty" sql:"tinyint"`
+	AccountsNextDueDate    string `bson:"accountsnextduedate,omitempty" sql:"date"`
+	AccountsNextMadeUpDate string `bson:"accountsnextmadeupdate,omitempty" sql:"date"`
+	AccountsCategory       string `bson:"accountscategory,omitempty" sql:"lookup 30"`
 	// Returns
-	ReturnsNextDueDate    string `bson:"returnsnextduedate,omitempty"`    // 10
-	ReturnsNextMadeUpDate string `bson:"returnsnextmadeupdate,omitempty"` // 10
+	ReturnsNextDueDate    string `bson:"returnsnextduedate,omitempty" sql:"date"`
+	ReturnsNextMadeUpDate string `bson:"returnsnextmadeupdate,omitempty" sql:"date"`
 	// Mortgages
-	NumMortChanges       string `bson:"nummortchanges,omitempty"`       // 6
-	NumMortOutstanding   string `bson:"nummortoutstanding,omitempty"`   // 6
-	NumMortPartSatisfied string `bson:"nummortpartsatisfied,omitempty"` // 6
-	NumMortSatisfied     string `bson:"nummortsatisfied,omitempty"`     // 6
+	NumMortChanges       string `bson:"nummortchanges,omitempty" sql:"int"`
+	NumMortOutstanding   string `bson:"nummortoutstanding,omitempty" sql:"int"`
+	NumMortPartSatisfied string `bson:"nummortpartsatisfied,omitempty" sql:"int"`
+	NumMortSatisfied     string `bson:"nummortsatisfied,omitempty" sql:"int"`
 	// SICCodes
 	SICCode1 string `bson:"siccode1,omitempty"` // 170
 	SICCode2 string `bson:"siccode2,omitempty"` // 170
