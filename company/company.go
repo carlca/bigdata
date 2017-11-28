@@ -34,37 +34,37 @@ type Company struct {
 	NumMortPartSatisfied string `bson:"nummortpartsatisfied,omitempty" sql:"int"`
 	NumMortSatisfied     string `bson:"nummortsatisfied,omitempty" sql:"int"`
 	// SICCodes
-	SICCode1 string `bson:"siccode1,omitempty"` // 170
-	SICCode2 string `bson:"siccode2,omitempty"` // 170
-	SICCode3 string `bson:"siccode3,omitempty"` // 170
-	SICCode4 string `bson:"siccode4,omitempty"` // 170
+	SICCode1 string `bson:"siccode1,omitempty" sql:"lookup 170 00000XXX"`
+	SICCode2 string `bson:"siccode2,omitempty" sql:"lookup 170 00000XXX"`
+	SICCode3 string `bson:"siccode3,omitempty" sql:"lookup 170 00000XXX"`
+	SICCode4 string `bson:"siccode4,omitempty" sql:"lookup 170 00000XXX"`
 	// LtdPartners
-	NumGenPartners string `bson:"numgenpartners,omitempty"` // 6
-	NumLimPartners string `bson:"numlimpartners,omitempty"` // 6
+	NumGenPartners string `bson:"numgenpartners,omitempty" sql:"int"`
+	NumLimPartners string `bson:"numlimpartners,omitempty" sql:"int"`
 	// Web
-	URI string `bson:"uri,omitempty"` // 47
+	URI string `bson:"uri,omitempty" sql:"nvarchar 47"`
 	// Old
-	ChangeDate1   string `bson:"changedate1,omitempty"`   // 10
-	CompanyName1  string `bson:"companyname1,omitempty"`  // 160
-	ChangeDate2   string `bson:"changedate2,omitempty"`   // 10
-	CompanyName2  string `bson:"companyname2,omitempty"`  // 160
-	ChangeDate3   string `bson:"changedate3,omitempty"`   // 10
-	CompanyName3  string `bson:"companyname3,omitempty"`  // 160
-	ChangeDate4   string `bson:"changedate4,omitempty"`   // 10
-	CompanyName4  string `bson:"companyname4,omitempty"`  // 160
-	ChangeDate5   string `bson:"changedate5,omitempty"`   // 10
-	CompanyName5  string `bson:"companyname5,omitempty"`  // 160
-	ChangeDate6   string `bson:"changedate6,omitempty"`   // 10
-	CompanyName6  string `bson:"companyname6,omitempty"`  // 160
-	ChangeDate7   string `bson:"changedate7,omitempty"`   // 10
-	CompanyName7  string `bson:"companyname7,omitempty"`  // 160
-	ChangeDate8   string `bson:"changedate8,omitempty"`   // 10
-	CompanyName8  string `bson:"companyname8,omitempty"`  // 160
-	ChangeDate9   string `bson:"changedate9,omitempty"`   // 10
-	CompanyName9  string `bson:"companyname9,omitempty"`  // 160
-	ChangeDate10  string `bson:"changedate10,omitempty"`  // 10
-	CompanyName10 string `bson:"companyname10,omitempty"` // 160
+	ChangeDate1   string `bson:"changedate1,omitempty" sql:"date"`
+	CompanyName1  string `bson:"companyname1,omitempty" sql:"nvarchar 160"`
+	ChangeDate2   string `bson:"changedate2,omitempty" sql:"date"`
+	CompanyName2  string `bson:"companyname2,omitempty" sql:"nvarchar 160"`
+	ChangeDate3   string `bson:"changedate3,omitempty" sql:"date"`
+	CompanyName3  string `bson:"companyname3,omitempty" sql:"nvarchar 160"`
+	ChangeDate4   string `bson:"changedate4,omitempty" sql:"date"`
+	CompanyName4  string `bson:"companyname4,omitempty" sql:"nvarchar 160"`
+	ChangeDate5   string `bson:"changedate5,omitempty" sql:"date"`
+	CompanyName5  string `bson:"companyname5,omitempty" sql:"nvarchar 160"`
+	ChangeDate6   string `bson:"changedate6,omitempty" sql:"date"`
+	CompanyName6  string `bson:"companyname6,omitempty" sql:"nvarchar 160"`
+	ChangeDate7   string `bson:"changedate7,omitempty" sql:"date"`
+	CompanyName7  string `bson:"companyname7,omitempty" sql:"nvarchar 160"`
+	ChangeDate8   string `bson:"changedate8,omitempty" sql:"date"`
+	CompanyName8  string `bson:"companyname8,omitempty" sql:"nvarchar 160"`
+	ChangeDate9   string `bson:"changedate9,omitempty" sql:"date"`
+	CompanyName9  string `bson:"companyname9,omitempty" sql:"nvarchar 160"`
+	ChangeDate10  string `bson:"changedate10,omitempty" sql:"date"`
+	CompanyName10 string `bson:"companyname10,omitempty" sql:"nvarchar 160"`
 	// Confirmation
-	ConfNextDueData    string `bson:"confnextduedata,omitempty"`      // 10
-	ConfLastMadeUpDate string `bson:"conflastmadeupcddate,omitempty"` // 10
+	ConfNextDueData    string `bson:"confnextduedata,omitempty" sql:"date"`
+	ConfLastMadeUpDate string `bson:"conflastmadeupcddate,omitempty" sql:"date"`
 }
