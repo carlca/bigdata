@@ -39,6 +39,47 @@ func (s *SQLSchema) AddColumn(name string, t string, size int, mask string) {
 	s.Columns = append(s.Columns, SQLColumn{name, t, size, mask})
 }
 
+// CreateTable return a line in TSQL to create a table
+func (s *SQLSchema) CreateTable(tableName string) []string {
+	// create lookups slice
+	var lookups []string
+	// initialize TSQL text
+	l := fmt.Sprintf("CREATE TABLE dbo.%v\n", tableName)
+	l = l + fmt.Sprintf("(\n")
+	for _, col := range s.Columns {
+		switch col.T {
+		case "lookup":
+			{
+				l = l + fmt.Sprintf("	%v %v NULL,\n", col.Name+"_ID", "int")
+				ll := fmt.Sprintf("CREATE TABLE dbo.%v\n", col.Name)
+				ll = ll + fmt.Sprintf("(\n")
+				ll = ll + fmt.Sprintf("\tID int IDENTITY (1,1),\n")
+				ll = ll + fmt.Sprintf("\tDesc nvarchar %v\n", col.Size)
+				ll = ll + fmt.Sprintf(")\n")
+				lookups = append(lookups, ll)
+			}
+		case "nvarchar":
+			{
+				l = l + fmt.Sprintf("\t%v %v %v NULL,\n", col.Name, col.T, col.Size)
+			}
+		default:
+			{
+				l = l + fmt.Sprintf("\t%v %v NULL,\n", col.Name, col.T)
+			}
+		}
+	}
+	// remove final comma
+	if strings.HasSuffix(l, ",\n") {
+		l = l[:len(l)-2] + "\n"
+	}
+	// insert closing )
+	l = l + fmt.Sprintf(")\n")
+	var r []string
+	r = append(r, l)
+	r = append(r, lookups...)
+	return r
+}
+
 func main() {
 	doc := &c.Company{}
 	schema := &SQLSchema{}
@@ -54,19 +95,12 @@ func main() {
 			n   int64
 			m   string
 		)
-		switch len(sqls) {
-		case 1:
-			t = sqls[0]
-			n = 0
-			m = ""
-		case 2:
-			t = sqls[0]
+		t = sqls[0]
+		if len(sqls) > 1 {
 			n, err = strconv.ParseInt(sqls[1], 10, 64)
-			m = ""
-		case 3:
-			t = sqls[0]
-			n, err = strconv.ParseInt(sqls[1], 10, 64)
-			m = sqls[2]
+			if len(sqls) > 2 {
+				m = sqls[2]
+			}
 		}
 		e.CheckError(err)
 		schema.AddColumn(name, t, int(n), m)
@@ -75,4 +109,8 @@ func main() {
 		fmt.Println(column)
 	}
 	fmt.Println()
+	sqls := schema.CreateTable("Company")
+	for _, sql := range sqls {
+		fmt.Println(sql)
+	}
 }
