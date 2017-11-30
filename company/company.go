@@ -34,10 +34,10 @@ type Company struct {
 	NumMortPartSatisfied string `bson:"nummortpartsatisfied,omitempty" sql:"int"`
 	NumMortSatisfied     string `bson:"nummortsatisfied,omitempty" sql:"int"`
 	// SICCodes
-	SICCode1 string `bson:"siccode1,omitempty" sql:"lookup 170 00000XXX"`
-	SICCode2 string `bson:"siccode2,omitempty" sql:"lookup 170 00000XXX"`
-	SICCode3 string `bson:"siccode3,omitempty" sql:"lookup 170 00000XXX"`
-	SICCode4 string `bson:"siccode4,omitempty" sql:"lookup 170 00000XXX"`
+	SICCode1 string `bson:"siccode1,omitempty" sql:"lookup 170 XXXXX SICode"`
+	SICCode2 string `bson:"siccode2,omitempty" sql:"lookup 170 XXXXX SICode"`
+	SICCode3 string `bson:"siccode3,omitempty" sql:"lookup 170 XXXXX SICode"`
+	SICCode4 string `bson:"siccode4,omitempty" sql:"lookup 170 XXXXX SICode"`
 	// LtdPartners
 	NumGenPartners string `bson:"numgenpartners,omitempty" sql:"int"`
 	NumLimPartners string `bson:"numlimpartners,omitempty" sql:"int"`
