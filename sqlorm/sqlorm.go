@@ -34,40 +34,24 @@ func (col SQLColumn) String() string {
 	return s
 }
 
-func (col SQLColumn) lookupMaskTable() (string, string) {
-	// original text field is replaced by a join to the lookup table
-	fieldDDL := fmt.Sprintf("\t%v nvarchar(%v) NOT NULL,\n", col.Name+"_ID", len(col.Mask))
-	// lookup table is created with a text index based on the Mask
+func (col SQLColumn) createDDL() (string, string) {
+	var fieldDDL string
+	var idDDL string
+	// choose between how to handle the lookups
+	if col.Mask != "" {
+		fieldDDL = fmt.Sprintf("\t%v nvarchar(%v) NULL,\n", col.Name+"_ID", len(col.Mask))
+		idDDL = fmt.Sprintf("\tID nvarchar(%v) NOT NULL PRIMARY KEY,\n", len(col.Mask))
+	} else {
+		fieldDDL = fmt.Sprintf("\t%v %v NULL,\n", col.Name+"_ID", "int")
+		idDDL = fmt.Sprintf("\tID int IDENTITY (1,1),\n")
+	}
+	// choose the table name for the lookup
+	tableName := e.Choice(col.Table != "", col.Table, col.Name)
+	// create the table DDL and the lookup DDL
 	var lookupDDL bytes.Buffer
-	lookupDDL.WriteString(fmt.Sprintf("CREATE TABLE dbo.%v\n", col.Table))
+	lookupDDL.WriteString(fmt.Sprintf("CREATE TABLE dbo.%v\n", tableName))
 	lookupDDL.WriteString(fmt.Sprintf("(\n"))
-	lookupDDL.WriteString(fmt.Sprintf("\tID nvarchar(%v) NOT NULL PRIMARY KEY,\n", len(col.Mask)))
-	lookupDDL.WriteString(fmt.Sprintf("\tDesc nvarchar(%v) NULL\n", col.Size))
-	lookupDDL.WriteString(fmt.Sprintf(")\n"))
-	return fieldDDL, lookupDDL.String()
-}
-
-func (col SQLColumn) lookupMask() (string, string) {
-	// original text field is replaced by a join to the lookup table
-	fieldDDL := fmt.Sprintf("\t%v nvarchar(%v) NOT NULL,\n", col.Name+"_ID", len(col.Mask))
-	// lookup table is created with a text index based on the Mask
-	var lookupDDL bytes.Buffer
-	lookupDDL.WriteString(fmt.Sprintf("CREATE TABLE dbo.%v\n", col.Table))
-	lookupDDL.WriteString(fmt.Sprintf("(\n"))
-	lookupDDL.WriteString(fmt.Sprintf("\tID nvarchar(%v) NOT NULL PRIMARY KEY,\n", len(col.Mask)))
-	lookupDDL.WriteString(fmt.Sprintf("\tDesc nvarchar(%v) NULL\n", col.Size))
-	lookupDDL.WriteString(fmt.Sprintf(")\n"))
-	return fieldDDL, lookupDDL.String()
-}
-
-func (col SQLColumn) lookup() (string, string) {
-	// the original text field is replaced by a join to the lookup table
-	fieldDDL := fmt.Sprintf("\t%v %v NULL,\n", col.Name+"_ID", "int")
-	// the lookup table is created with a generated int index
-	var lookupDDL bytes.Buffer
-	lookupDDL.WriteString(fmt.Sprintf("CREATE TABLE dbo.%v\n", col.Name))
-	lookupDDL.WriteString(fmt.Sprintf("(\n"))
-	lookupDDL.WriteString(fmt.Sprintf("\tID int IDENTITY (1,1),\n"))
+	lookupDDL.WriteString(idDDL)
 	lookupDDL.WriteString(fmt.Sprintf("\tDesc nvarchar(%v) NULL\n", col.Size))
 	lookupDDL.WriteString(fmt.Sprintf(")\n"))
 	return fieldDDL, lookupDDL.String()
@@ -87,9 +71,8 @@ func (s *SQLSchema) AddColumn(name string, t string, size int, mask string, tabl
 func (s *SQLSchema) CreateTable(tableName string) []string {
 	// create lookups slice
 	var (
-		lookups   []string
-		tableDDL  string
-		lookupDDL string
+		lookups  []string
+		tableDDL string
 	)
 	// initialize TSQL text
 	tableDDL = fmt.Sprintf("CREATE TABLE dbo.%v\n", tableName)
@@ -98,20 +81,11 @@ func (s *SQLSchema) CreateTable(tableName string) []string {
 		switch col.T {
 		case "lookup":
 			{
-				var fieldDDL string
-				switch {
-				case col.Mask != "" && col.Table != "":
-					fieldDDL, lookupDDL = col.lookupMaskTable()
-				case col.Mask != "" && col.Table == "":
-					fieldDDL, lookupDDL = col.lookupMask()
-				case col.Mask == "" && col.Table != "":
-					{
-					}
-				case col.Mask == "" && col.Table == "":
-					fieldDDL, lookupDDL = col.lookup()
-				}
+				fieldDDL, lookupDDL := col.createDDL()
 				tableDDL = tableDDL + fmt.Sprintf("%v", fieldDDL)
-				lookups = append(lookups, lookupDDL)
+				if !e.Contains(lookups, lookupDDL) {
+					lookups = append(lookups, lookupDDL)
+				}
 			}
 		case "nvarchar":
 			{
@@ -129,6 +103,7 @@ func (s *SQLSchema) CreateTable(tableName string) []string {
 	}
 	// insert closing )
 	tableDDL = tableDDL + fmt.Sprintf(")\n")
+
 	var r []string
 	r = append(r, tableDDL)
 	r = append(r, lookups...)

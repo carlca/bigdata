@@ -1,13 +1,11 @@
-package main
+package sqlserver
 
 import (
 	"database/sql"
 	"flag"
 	"fmt"
 	"log"
-
-	sql "github.com/carlca/bigcompany/sqlserver"
-	_ "github.com/denisenkom/go-mssqldb"
+	// _ "github.com/denisenkom/go-mssqldb"
 )
 
 var (
@@ -18,42 +16,28 @@ var (
 	user     = flag.String("user", "", "the database user")
 )
 
-func main() {
-
-	conn := flag.Parse()
-
+// Connect established contact with an SQL Server
+func Connect() *sql.DB {
+	// parse command line flags
+	flag.Parse()
+	// dump flags if debug
 	if *debug {
 		fmt.Printf(" password:%s\n", *password)
 		fmt.Printf(" port:%d\n", *port)
 		fmt.Printf(" server:%s\n", *server)
 		fmt.Printf(" user:%s\n", *user)
 	}
-
+	// build connection string
 	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d", *server, *user, *password, *port)
+	// if debug dump connection string
 	if *debug {
 		fmt.Printf(" connString:%s\n", connString)
 	}
+	// create an SQL Server connection
 	conn, err := sql.Open("mssql", connString)
 	if err != nil {
 		log.Fatal("Open connection failed:", err.Error())
 	}
 	defer conn.Close()
-
-	stmt, err := conn.Prepare("select 1, 'abc'")
-	if err != nil {
-		log.Fatal("Prepare failed:", err.Error())
-	}
-	defer stmt.Close()
-
-	row := stmt.QueryRow()
-	var somenumber int64
-	var somechars string
-	err = row.Scan(&somenumber, &somechars)
-	if err != nil {
-		log.Fatal("Scan failed:", err.Error())
-	}
-	fmt.Printf("somenumber:%d\n", somenumber)
-	fmt.Printf("somechars:%s\n", somechars)
-
-	fmt.Printf("bye\n")
+	return conn
 }
