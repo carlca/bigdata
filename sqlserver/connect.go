@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	e "github.com/carlca/utils/essentials"
+	// MSSQL driver
+	_ "github.com/denisenkom/go-mssqldb"
 )
 
 var (
@@ -19,52 +21,6 @@ var (
 // DB inherits from sql.DB
 type DB struct {
 	*sql.DB
-}
-
-// Exec combines Prepare and Exec methods
-// func (db *DB) Exec(cmd string) {
-// 	stmt, err := db.Prepare(cmd)
-// 	e.CheckError("prepare: "+cmd+" failed", err)
-// 	_, err = stmt.Exec()
-// 	e.CheckError("exec: "+cmd+" failed", err)
-// 	if *debug {
-// 		fmt.Printf("exec: %v succeeded\n", cmd)
-// 	}
-// }
-
-// NewTx wraps the *DB.Begin func
-func (db *DB) NewTx() *Tx {
-	tnx, err := db.Begin()
-	e.CheckError("BeginTx failed: ", err)
-	if *debug {
-		fmt.Printf("NewTx: succeeded\n")
-	}
-	return &Tx{*tnx}
-}
-
-// Tx inherits from sql.Tx
-type Tx struct {
-	sql.Tx
-}
-
-// Exec wraps *Tx.Exec
-func (tx *Tx) Exec(cmd string) {
-	stmt, err := tx.Prepare(cmd)
-	e.CheckError("prepare: "+cmd+" failed", err)
-	_, err = stmt.Exec()
-	e.CheckError("exec: "+cmd+" failed", err)
-	if *debug {
-		fmt.Printf("exec: %v succeeded\n", cmd)
-	}
-}
-
-// CommitTx wraps the *Tx.Commit func
-func (tx *Tx) CommitTx() {
-	err := tx.Commit()
-	e.CheckError("tx.CommitTx failed: ", err)
-	if *debug {
-		fmt.Printf("tx.CommitTx succeeded\n")
-	}
 }
 
 // Connect establishes contact with an SQL Server

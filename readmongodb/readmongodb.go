@@ -15,13 +15,13 @@ import (
 func main() {
 	// establish MongoDB session
 	session, err := mgo.Dial("127.0.0.1")
-	e.CheckError(err)
+	e.CheckError("error connecting with MongoDB", err)
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 	// get collection count
 	coll := session.DB("Companies").C("Companies")
 	count, err := coll.Count()
-	e.CheckError(err)
+	e.CheckError("error creating collection", err)
 	p := message.NewPrinter(language.English)
 	p.Printf("Record count for Companies: %d\n", count)
 	// read subset of collection
@@ -58,6 +58,9 @@ func main() {
 		}
 		if company.SICCode3 != "" {
 			fmt.Println(company.SICCode3)
+		}
+		if company.SICCode4 != "" {
+			fmt.Println(company.SICCode4)
 		}
 		if company.SICCode4 != "" {
 			fmt.Println(company.SICCode4)
