@@ -16,7 +16,7 @@
       "program": "${fileDirname}",
       "env": {},
       "args": [
-        "-debug=false",
+        "-debug=true",
         "-server=192.168.99.100",
         "-user=sa",
         "-password=23Skidoo",
