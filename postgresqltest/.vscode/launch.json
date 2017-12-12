@@ -1,6 +1,6 @@
 {
   //
-  // go run simple.go -debug=true -server=192.168.99.100 
+  // go run simple.go -debug=true -server=192.168.99.100
   //    -password=23Skidoo -user=sa -database=Company
   //
   "version": "0.2.0",
@@ -16,12 +16,11 @@
       "program": "${fileDirname}",
       "env": {},
       "args": [
-        "-debug=true",
+        "-debug=false",
         "-server=192.168.99.100",
         "-user=sa",
         "-password=23Skidoo",
-        "-port=1433",
-        "-database=Company"
+        "-port=1433"
       ],
       "showLog": true
     }
