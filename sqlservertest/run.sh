@@ -1,1 +1,0 @@
-go run simple.go -debug=true -server=192.168.99.100 -password=23Skidoo -user=sa
