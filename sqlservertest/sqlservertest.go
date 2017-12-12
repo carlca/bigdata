@@ -9,7 +9,7 @@ func main() {
 	dbase, debug := q.Connect()
 	defer dbase.Close()
 	tx, err := dbase.Begin()
-	e.CheckError("db.Begin()", err, debug)
+	e.CheckError("dbase.Begin()", err, debug)
 	defer tx.Commit()
 	_, err = tx.Exec("DROP TABLE IF EXISTS Company")
 	e.CheckError("DROP TABLE", err, debug)

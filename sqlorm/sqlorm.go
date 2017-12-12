@@ -136,7 +136,7 @@ func main() {
 				}
 			}
 		}
-		e.CheckError(err)
+		e.CheckError("", err, false)
 		schema.AddColumn(name, t, int(n), m, l)
 	}
 	for _, column := range schema.Columns {
