@@ -17,60 +17,42 @@ type DB struct {
 	*sql.DB
 }
 
-// ConnectPostgreSQL establishes contact with an PostgreSQL server
-func ConnectPostgreSQL() (*DB, bool) {
+func buildConnString(driver, user, password, server string) string {
+	var connString string
+	switch driver {
+	case "mssql":
+		{
+			port := 1433
+			connString = fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d", server, user, password, port)
+		}
+	case "postgres":
+		{
+			sslmode := "disable"
+			connString = fmt.Sprintf("user=%s password=%s sslmode=%s", user, password, sslmode)
+		}
+	}
+	return connString
+}
+
+// Connect establishes contact with an SQL Server
+func Connect() (*DB, bool) {
 	// flags
+	driver := flag.String("driver", "", "db driver name")
 	debug := flag.Bool("debug", false, "enable debugging")
 	user := flag.String("user", "", "the database user")
 	password := flag.String("password", "", "the database password")
-	// parse command line flags
-	flag.Parse()
-	// dump flags if debug
-	if *debug {
-		fmt.Printf("user: %s\n", *user)
-		// fmt.Printf("dbname: %s\n", *dbname)
-		fmt.Printf("password: %s\n", *password)
-	}
-	// build connection string
-	connString := fmt.Sprintf("user=%s password=%s", *user, *password)
-	connString += " sslmode=disable"
-	// return DB object
-	return CreateDB(connString, "postgres", debug), *debug
-}
-
-// ConnectSQLServer establishes contact with an SQL Server
-func ConnectSQLServer() (*DB, bool) {
-	// flags
-	debug := flag.Bool("debug", false, "enable debugging")
-	password := flag.String("password", "", "the database password")
-	port := flag.Int("port", 1433, "the database port")
 	server := flag.String("server", "", "the database server")
-	user := flag.String("user", "", "the database user")
 	// parse command line flags
 	flag.Parse()
-	// dump flags if debug
-	if *debug {
-		fmt.Printf("password: %s\n", *password)
-		fmt.Printf("port: %d\n", *port)
-		fmt.Printf("server: %s\n", *server)
-		fmt.Printf("user: %s\n", *user)
-	}
-	// build connection string
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d", *server, *user, *password, *port)
-	// return DB object
-	return CreateDB(connString, "mssql", debug), *debug
-}
-
-// CreateDB returns a DB object based on connecion string and driver name
-func CreateDB(connString, driverName string, debug *bool) *DB {
-	// if debug dump connection string
+	// connection string
+	connString := buildConnString(*driver, *user, *password, *server)
 	if *debug {
 		fmt.Printf("connString: %s\n", connString)
 	}
 	// create an SQL Server connection
-	dbx, err := sql.Open("mssql", connString)
+	dbx, err := sql.Open(*driver, connString)
 	e.CheckError("Open DB", err, *debug)
 	err = dbx.Ping()
 	e.CheckError("db.Ping", err, *debug)
-	return &DB{dbx}
+	return &DB{dbx}, *debug
 }

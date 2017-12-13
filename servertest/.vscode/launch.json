@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch - sqlserver",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "remotePath": "",
+      "port": 2345,
+      "host": "localhost",
+      "program": "${fileDirname}",
+      "env": {},
+      "args": [
+        "-debug=true",
+        "-driver=mssql",
+        "-user=sa",
+        "-password=23Skidoo",
+        "-server=192.168.99.100",
+      ],
+      "showLog": true
+    },
+    {
+      "name": "Launch - postgres",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "remotePath": "",
+      "port": 2345,
+      "host": "localhost",
+      "program": "${fileDirname}",
+      "env": {},
+      "args": [
+        "-debug=true",
+        "-driver=postgres",
+        "-user=postgres",
+        "-password=23Skidoo"
+      ],
+      "showLog": true
+    }
+  ]
+}
