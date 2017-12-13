@@ -18,7 +18,7 @@ var (
 	user     = flag.String("user", "", "the database user")
 )
 
-// DB inherits from sql.DB
+// DB inherits from sql.DB ...
 type DB struct {
 	*sql.DB
 }
