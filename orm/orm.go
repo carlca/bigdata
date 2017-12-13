@@ -68,7 +68,7 @@ func (s *Schema) AddColumn(name string, t string, size int, mask string, table s
 }
 
 // CreateTable return a line in TSQL to create a table
-func (s *Schema) CreateTable(tableName string) []string {
+func (s *Schema) CreateDDL(tableName string) []string {
 	// create lookups slice
 	var (
 		lookups  []string
@@ -110,41 +110,47 @@ func (s *Schema) CreateTable(tableName string) []string {
 	return r
 }
 
-func main() {
-	doc := &c.Company{}
-	schema := &Schema{}
-
-	val := reflect.Indirect(reflect.ValueOf(doc))
-	for index := 0; index < val.NumField(); index++ {
-		name := val.Type().Field(index).Name
-		sql := val.Type().Field(index).Tag.Get("sql")
-		sqls := strings.Split(sql, " ")
-		var (
-			err error
-			t   string
-			n   int64
-			m   string
-			l   string
-		)
-		t = sqls[0]
-		if len(sqls) > 1 {
-			n, err = strconv.ParseInt(sqls[1], 10, 64)
-			if len(sqls) > 2 {
-				m = sqls[2]
-				if len(sqls) > 2 {
-					l = sqls[3]
-				}
-			}
-		}
-		e.CheckError("", err, false)
-		schema.AddColumn(name, t, int(n), m, l)
-	}
-	for _, column := range schema.Columns {
-		fmt.Println(column)
-	}
-	fmt.Println()
-	sqls := schema.CreateTable("Company")
-	for _, sql := range sqls {
-		fmt.Println(sql)
-	}
+// ImportCSVDef is unfinished!
+func (s *Schema) ImportCSVDef(csvDef *interface{}) []string {
+	val := reflect.Indirect(reflect.ValueOf(csvDef))
+	return nil
 }
+
+// func main() {
+// 	doc := &c.Company{}
+// 	schema := &Schema{}
+
+// 	val := reflect.Indirect(reflect.ValueOf(doc))
+// 	for index := 0; index < val.NumField(); index++ {
+// 		name := val.Type().Field(index).Name
+// 		sql := val.Type().Field(index).Tag.Get("sql")
+// 		sqls := strings.Split(sql, " ")
+// 		var (
+// 			err error
+// 			t   string
+// 			n   int64
+// 			m   string
+// 			l   string
+// 		)
+// 		t = sqls[0]
+// 		if len(sqls) > 1 {
+// 			n, err = strconv.ParseInt(sqls[1], 10, 64)
+// 			if len(sqls) > 2 {
+// 				m = sqls[2]
+// 				if len(sqls) > 2 {
+// 					l = sqls[3]
+// 				}
+// 			}
+// 		}
+// 		e.CheckError("", err, false)
+// 		schema.AddColumn(name, t, int(n), m, l)
+// 	}
+// 	for _, column := range schema.Columns {
+// 		fmt.Println(column)
+// 	}
+// 	fmt.Println()
+// 	sqls := schema.CreateTable("Company")
+// 	for _, sql := range sqls {
+// 		fmt.Println(sql)
+// 	}
+// }
