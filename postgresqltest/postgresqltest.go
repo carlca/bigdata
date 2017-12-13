@@ -1,12 +1,12 @@
 package main
 
 import (
-	q "github.com/carlca/bigdata/sqlserver"
+	p "github.com/carlca/bigdata/postgresql"
 	e "github.com/carlca/utils/essentials"
 )
 
 func main() {
-	dbase, debug := q.Connect()
+	dbase, debug := p.Connect()
 	defer dbase.Close()
 	tx, err := dbase.Begin()
 	e.CheckError("db.Begin()", err, debug)
@@ -17,7 +17,7 @@ func main() {
 		(ProductID int PRIMARY KEY NOT NULL,
 		ProductName varchar(25) NOT NULL,
 		Price money NULL,
-		Price2 money NULL,		
+		Price2 money NULL,
 		ProductDescription text NULL)`)
 	e.CheckError("CREATE TABLE", err, debug)
 }

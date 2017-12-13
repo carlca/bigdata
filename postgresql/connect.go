@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	debug    = flag.Bool("debug", false, "enable debugging")
-	user     = flag.String("user", "", "the database user")
-	dbname   = flag.String("dbname", "", "the database name")
+	debug = flag.Bool("debug", false, "enable debugging")
+	user  = flag.String("user", "", "the database user")
+	// dbname   = flag.String("dbname", "", "the database name")
 	password = flag.String("password", "", "the database password")
 )
 
@@ -29,12 +29,13 @@ func Connect() (*DB, bool) {
 	// dump flags if debug
 	if *debug {
 		fmt.Printf("user: %s\n", *user)
-		fmt.Printf("dbname: %s\n", *dbname)
+		// fmt.Printf("dbname: %s\n", *dbname)
 		fmt.Printf("password: %s\n", *password)
 	}
 	// build connection string
-	connString := fmt.Sprintf("user=%s dbname=%s password=%s", *user, *dbname, *password)
-	connString = connString + " sslmode=verify-full"
+	//connString := fmt.Sprintf("user=%s dbname=%s password=%s", *user, *dbname, *password)
+	connString := fmt.Sprintf("user=%s password=%s", *user, *password)
+	connString = connString + " sslmode=disable"
 	// if debug dump connection string
 	if *debug {
 		fmt.Printf("connString: %s\n", connString)
@@ -42,7 +43,7 @@ func Connect() (*DB, bool) {
 	// create an SQL Server connection
 	dbx, err := sql.Open("postgres", connString)
 	e.CheckError("Open DB", err, *debug)
-	err = dbx.Ping()
-	e.CheckError("db.Ping", err, *debug)
+	//err = dbx.Ping()
+	//e.CheckError("db.Ping", err, *debug)
 	return &DB{dbx}, *debug
 }

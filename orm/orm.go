@@ -1,4 +1,4 @@
-package main
+package orm
 
 import (
 	"bytes"
@@ -11,8 +11,8 @@ import (
 	e "github.com/carlca/utils/essentials"
 )
 
-// SQLColumn represents one column in an SQLSchema
-type SQLColumn struct {
+// Column represents one column in an Schema
+type Column struct {
 	Name  string
 	T     string
 	Size  int
@@ -20,7 +20,7 @@ type SQLColumn struct {
 	Table string
 }
 
-func (col SQLColumn) String() string {
+func (col Column) String() string {
 	s := fmt.Sprintf(" [name: %v] [type: %v]", col.Name, col.T)
 	if col.Size > 0 {
 		s = s + fmt.Sprintf(" [size: %v]", col.Size)
@@ -34,7 +34,7 @@ func (col SQLColumn) String() string {
 	return s
 }
 
-func (col SQLColumn) createDDL() (string, string) {
+func (col Column) createDDL() (string, string) {
 	var fieldDDL string
 	var idDDL string
 	// choose between how to handle the lookups
@@ -57,18 +57,18 @@ func (col SQLColumn) createDDL() (string, string) {
 	return fieldDDL, lookupDDL.String()
 }
 
-// SQLSchema represents the metadata for an SQLServer table
-type SQLSchema struct {
-	Columns []SQLColumn
+// Schema represents the metadata for an SQLServer table
+type Schema struct {
+	Columns []Column
 }
 
-// AddColumn adds an SQLColumn struct to the SQLSchema
-func (s *SQLSchema) AddColumn(name string, t string, size int, mask string, table string) {
-	s.Columns = append(s.Columns, SQLColumn{name, t, size, mask, table})
+// AddColumn adds an Column struct to the SQLSchema
+func (s *Schema) AddColumn(name string, t string, size int, mask string, table string) {
+	s.Columns = append(s.Columns, Column{name, t, size, mask, table})
 }
 
 // CreateTable return a line in TSQL to create a table
-func (s *SQLSchema) CreateTable(tableName string) []string {
+func (s *Schema) CreateTable(tableName string) []string {
 	// create lookups slice
 	var (
 		lookups  []string
@@ -112,7 +112,7 @@ func (s *SQLSchema) CreateTable(tableName string) []string {
 
 func main() {
 	doc := &c.Company{}
-	schema := &SQLSchema{}
+	schema := &Schema{}
 
 	val := reflect.Indirect(reflect.ValueOf(doc))
 	for index := 0; index < val.NumField(); index++ {

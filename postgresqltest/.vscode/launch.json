@@ -1,6 +1,6 @@
 {
   //
-  // go run postgresqltest.go -debug=true -user=postgres -password=23Skidoo -dbname=Company
+  // go run postgresqltest.go -debug=true -user=postgres -password=23Skidoo
   //
   "version": "0.2.0",
   "configurations": [
@@ -17,8 +17,7 @@
       "args": [
         "-debug=true",
         "-user=postgres",
-        "-password=23Skidoo",
-        "-dbname=Company"
+        "-password=23Skidoo"
       ],
       "showLog": true
     }
