@@ -1,15 +1,15 @@
 package main
 
 import (
-	p "github.com/carlca/bigdata/postgresql"
+	s "github.com/carlca/bigdata/server"
 	e "github.com/carlca/utils/essentials"
 )
 
 func main() {
-	dbase, debug := p.Connect()
+	dbase, debug := s.ConnectPostgreSQL()
 	defer dbase.Close()
 	tx, err := dbase.Begin()
-	e.CheckError("db.Begin()", err, debug)
+	e.CheckError("dbase.Begin()", err, debug)
 	defer tx.Commit()
 	_, err = tx.Exec("DROP TABLE IF EXISTS Company")
 	e.CheckError("DROP TABLE", err, debug)

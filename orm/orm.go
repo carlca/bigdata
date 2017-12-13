@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	c "github.com/carlca/bigdata/company"
 	e "github.com/carlca/utils/essentials"
 )
 
@@ -20,6 +19,7 @@ type Column struct {
 	Table string
 }
 
+// Implements the String() func of the Stringer interface
 func (col Column) String() string {
 	s := fmt.Sprintf(" [name: %v] [type: %v]", col.Name, col.T)
 	if col.Size > 0 {
@@ -34,6 +34,7 @@ func (col Column) String() string {
 	return s
 }
 
+// used internally by Schema.CreateDDL
 func (col Column) createDDL() (string, string) {
 	var fieldDDL string
 	var idDDL string
@@ -67,7 +68,36 @@ func (s *Schema) AddColumn(name string, t string, size int, mask string, table s
 	s.Columns = append(s.Columns, Column{name, t, size, mask, table})
 }
 
-// CreateTable return a line in TSQL to create a table
+// ImportCSVDef takes any CSV struct and builds Columns from it
+func (s *Schema) ImportCSVDef(csvDef interface{}) {
+	val := reflect.Indirect(reflect.ValueOf(csvDef))
+	for index := 0; index < val.NumField(); index++ {
+		name := val.Type().Field(index).Name
+		sql := val.Type().Field(index).Tag.Get("sql")
+		sqls := strings.Split(sql, " ")
+		var (
+			err error
+			t   string
+			n   int64
+			m   string
+			l   string
+		)
+		t = sqls[0]
+		if len(sqls) > 1 {
+			n, err = strconv.ParseInt(sqls[1], 10, 64)
+			if len(sqls) > 2 {
+				m = sqls[2]
+				if len(sqls) > 2 {
+					l = sqls[3]
+				}
+			}
+		}
+		e.CheckError("", err, false)
+		s.AddColumn(name, t, int(n), m, l)
+	}
+}
+
+// CreateDDL return a line in TSQL to create a table
 func (s *Schema) CreateDDL(tableName string) []string {
 	// create lookups slice
 	var (
@@ -110,47 +140,11 @@ func (s *Schema) CreateDDL(tableName string) []string {
 	return r
 }
 
-// ImportCSVDef is unfinished!
-func (s *Schema) ImportCSVDef(csvDef *interface{}) []string {
-	val := reflect.Indirect(reflect.ValueOf(csvDef))
-	return nil
+// DumpColumns returns a string which is a dump of the schema columns
+func (s *Schema) DumpColumns() string {
+	result := ""
+	for _, column := range s.Columns {
+		result += fmt.Sprintf("%v\n", column)
+	}
+	return result
 }
-
-// func main() {
-// 	doc := &c.Company{}
-// 	schema := &Schema{}
-
-// 	val := reflect.Indirect(reflect.ValueOf(doc))
-// 	for index := 0; index < val.NumField(); index++ {
-// 		name := val.Type().Field(index).Name
-// 		sql := val.Type().Field(index).Tag.Get("sql")
-// 		sqls := strings.Split(sql, " ")
-// 		var (
-// 			err error
-// 			t   string
-// 			n   int64
-// 			m   string
-// 			l   string
-// 		)
-// 		t = sqls[0]
-// 		if len(sqls) > 1 {
-// 			n, err = strconv.ParseInt(sqls[1], 10, 64)
-// 			if len(sqls) > 2 {
-// 				m = sqls[2]
-// 				if len(sqls) > 2 {
-// 					l = sqls[3]
-// 				}
-// 			}
-// 		}
-// 		e.CheckError("", err, false)
-// 		schema.AddColumn(name, t, int(n), m, l)
-// 	}
-// 	for _, column := range schema.Columns {
-// 		fmt.Println(column)
-// 	}
-// 	fmt.Println()
-// 	sqls := schema.CreateTable("Company")
-// 	for _, sql := range sqls {
-// 		fmt.Println(sql)
-// 	}
-// }
