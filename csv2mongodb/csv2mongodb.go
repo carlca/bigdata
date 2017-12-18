@@ -21,11 +21,11 @@ const (
 func main() {
 	// open CSV file
 	csvFile, err := os.Open(fileName)
-	e.CheckError(err)
+	e.CheckError("os.Open()", err, false)
 	defer csvFile.Close()
 	// record size of CSV file
 	fileInfo, err := csvFile.Stat()
-	e.CheckError(err)
+	e.CheckError("csvFile.Stat()", err, false)
 	fileSize := fileInfo.Size()
 	// create counting reader
 	cr := &e.CountingReader{Reader: csvFile}
@@ -33,7 +33,7 @@ func main() {
 	recordCount := 0
 	// establish MongoDB session
 	session, err := mgo.Dial("127.0.0.1")
-	e.CheckError(err)
+	e.CheckError("mgo.Dial()", err, false)
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 	// skip first row
@@ -43,10 +43,11 @@ func main() {
 	// empty
 	collection.RemoveAll(nil)
 	// read loop
+	var record []string
 	for {
 		recordCount++
 		// read an entire record of CSV values
-		record, err := reader.Read()
+		record, err = reader.Read()
 		// enable printing of thousands characters
 		p := message.NewPrinter(language.English)
 		if err == io.EOF {
@@ -54,7 +55,7 @@ func main() {
 			p.Printf("\n%d records read", recordCount)
 			break
 		} else {
-			e.CheckError(err)
+			e.CheckError("reader.Read()", err, false)
 		}
 		// print bytesRead / fileSize
 		p.Printf("\r%d / %d", cr.BytesRead, fileSize)
@@ -65,7 +66,7 @@ func main() {
 			elem.Field(index).SetString(record[index])
 		}
 		err = collection.Insert(doc)
-		e.CheckError(err)
+		e.CheckError("collection.Insert()", err, false)
 	}
 	fmt.Println()
 }

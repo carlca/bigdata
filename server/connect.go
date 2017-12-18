@@ -15,6 +15,7 @@ import (
 // DB inherits from sql.DB ...
 type DB struct {
 	*sql.DB
+	IsMSSQL bool
 }
 
 func buildConnString(driver, user, password, server string) string {
@@ -54,5 +55,5 @@ func Connect() (*DB, bool) {
 	e.CheckError("Open DB", err, *debug)
 	err = dbx.Ping()
 	e.CheckError("db.Ping", err, *debug)
-	return &DB{dbx}, *debug
+	return &DB{dbx, *driver == "mssql"}, *debug
 }
