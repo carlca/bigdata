@@ -10,6 +10,9 @@ import (
 	e "github.com/carlca/utils/essentials"
 )
 
+// Dbg is a global, ooh!
+var Dbg string
+
 // Column represents one column in an Schema
 type Column struct {
 	schema Schema
@@ -165,11 +168,6 @@ func (s *Schema) CreateDDLs(tableName string) []string {
 	return r
 }
 
-// CreateLookupTable adds a new LookupTable to LookupTables
-func CreateLookupTable(name string) {
-	LookupTables = append(LookupTables, LookupTable{name, nil})
-}
-
 // InsertData constructs a DDL statement to insert the values for the main table
 func (s *Schema) InsertData(source []string) string {
 	// start DDL statement
@@ -191,7 +189,6 @@ func (s *Schema) InsertData(source []string) string {
 	// run through columns again
 	for _, col := range s.Columns {
 		// escape ' to \'
-		// datum := strings.Replace(source[col.Index], `'`, `\'`, -1)
 		datum := strings.Replace(source[col.Index], `'`, `''`, -1)
 		switch col.T {
 		case "varchar":
@@ -199,7 +196,7 @@ func (s *Schema) InsertData(source []string) string {
 			if len(datum) > col.Size {
 				vcline = fmt.Sprintf("'%s',\n", datum[0:col.Size])
 				blame := fmt.Sprintf("%s (%d) %s", col.Name, col.Size, datum)
-				Overflows = append(Overflows, Overflow{source, blame})
+				AddOverflow(source, blame)
 			}
 			ins += vcline
 		case "int":
@@ -217,10 +214,17 @@ func (s *Schema) InsertData(source []string) string {
 			}
 		case "lookup":
 			ins += fmt.Sprintf("'',\n")
+			name := ""
 			switch {
 			case col.Table == "":
+				name = col.Name
 			case col.Table != "":
+				name = col.Table
 			}
+			lookupTable := GetLookupTable(name)
+			lookupTable.AddRow(0, "Descr")
+			dmp := fmt.Sprintf("col.Name: %v  col.Table: %v  col.Mask: %v  Datum: %v\n", col.Name, col.Table, col.Mask, datum)
+			Dbg += dmp
 		}
 	}
 	// remove final comma

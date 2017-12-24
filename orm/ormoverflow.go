@@ -8,3 +8,8 @@ type Overflow struct {
 
 // Overflows is a slice of Overflow structs
 var Overflows []Overflow
+
+// AddOverflow adds an entry to the Overflows slice
+func AddOverflow(source []string, blame string) {
+	Overflows = append(Overflows, Overflow{source, blame})
+}
