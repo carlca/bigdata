@@ -86,10 +86,15 @@ func main() {
 			ioutil.WriteFile("/users/carlca/debug.txt", bytes, 0755)
 		}
 		e.CheckError(ins, err, false)
+		if recordCount > 3 {
+			break
+		}
 	}
 	if len(o.Overflows) > 0 {
 		for _, overflow := range o.Overflows {
 			fmt.Println(overflow)
 		}
 	}
+	bytes := []byte(o.Dbg)
+	ioutil.WriteFile("/users/carlca/debug3.txt", bytes, 0755)
 }
