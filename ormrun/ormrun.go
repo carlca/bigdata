@@ -59,7 +59,8 @@ func main() {
 	cr := &e.CountingReader{Reader: csvFile}
 	reader := csv.NewReader(cr)
 	recordCount := 0
-	// skip first row
+	// init Lookups
+	o.CreateLookupTables()
 	_, err = reader.Read()
 	// read loop
 	var record []string
@@ -97,4 +98,38 @@ func main() {
 	}
 	bytes := []byte(o.Dbg)
 	ioutil.WriteFile("/users/carlca/debug3.txt", bytes, 0755)
+
+	dmp := ""
+	for _, table := range o.Lookups {
+		dmp += fmt.Sprintf("%s:\n\n", table.Name)
+		for _, row := range table.Rows {
+			dmp += fmt.Sprintf("%d: %s", row.ID, row.Descr)
+		}
+	}
+
+	fmt.Println(dmp)
 }
+
+// String implements Stringer interface for LookupTables
+// func (ls LookupTables) String() string {
+// 	result := ""
+// 	for _, table := range ls {
+// 		result += fmt.Sprintf("%s\n", table)
+// 	}
+// 	return result
+// }
+
+// // String implements Stringer interface for LookupTable
+// func (l *LookupTable) String() string {
+// 	result := fmt.Sprintf("%s:\n\n", l.Name)
+// 	for _, row := range l.Rows {
+// 		result += fmt.Sprintf("%s\n", row)
+// 	}
+// 	return result
+// }
+
+// // String implements Stringer interface for LookupRow
+// func (r LookupRow) String() string {
+// 	return fmt.Sprintf("%d: %s", r.ID, r.Descr)
+// }
+
