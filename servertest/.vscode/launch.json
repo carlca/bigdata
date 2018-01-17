@@ -18,7 +18,8 @@
         "-password=23Skidoo",
         "-server=192.168.99.100",
       ],
-      "showLog": true
+      "showLog": true,
+      "trace": "verbose"
     },
     {
       "name": "Launch - postgres",

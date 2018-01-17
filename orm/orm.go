@@ -40,20 +40,13 @@ func (col Column) String() string {
 }
 
 // used internally by Schema.CreateDDL
-func (col Column) createDDL() (string, string) {
-	var fieldDDL string
+func (col Column) lookupDDL() (string) {
 	var idDDL string
 	// choose between how to handle the lookups
 	nprefix := e.Choice(col.schema.IsMSSQL, "n", "")
 	dboprefix := e.Choice(col.schema.IsMSSQL, "dbo.", "")
-	if col.Mask != "" {
-		fieldDDL = fmt.Sprintf("\t%v %vvarchar(%v) NULL,\n", col.Name+"_ID", nprefix, len(col.Mask))
-		idDDL = fmt.Sprintf("\tID %vvarchar(%v) NOT NULL PRIMARY KEY,\n", nprefix, len(col.Mask))
-	} else {
-		fieldDDL = fmt.Sprintf("\t%v %v NULL,\n", col.Name+"_ID", "int")
-		idDDL = fmt.Sprintf("\tID int NOT NULL PRIMARY KEY,\n")
-		// NOT NULL PRIMARY KEY was IDENTITY (1,1)
-	}
+	// the lookup table will always have an int ID
+	idDDL = fmt.Sprintf("\tID int NOT NULL PRIMARY KEY,\n")
 	// choose the table name for the lookup
 	tableName := e.Choice(col.Table != "", col.Table, col.Name)
 	// create the table DDL and the lookup DDL
@@ -63,7 +56,7 @@ func (col Column) createDDL() (string, string) {
 	lookupDDL.WriteString(idDDL)
 	lookupDDL.WriteString(fmt.Sprintf("\tDescr %vvarchar(%v) NULL\n", nprefix, col.Size))
 	lookupDDL.WriteString(fmt.Sprintf(")\n"))
-	return fieldDDL, lookupDDL.String()
+	return lookupDDL.String()
 }
 
 // Schema represents the metadata for a table
@@ -139,8 +132,8 @@ func (s *Schema) CreateDDLs(tableName string) []string {
 		switch col.T {
 		case "lookup":
 			{
-				fieldDDL, lookupDDL := col.createDDL()
-				tableDDL += fmt.Sprintf("%v", fieldDDL)
+				tableDDL += fmt.Sprintf("\t%v %v NULL,\n", col.Name+"_ID", "int")
+				lookupDDL := col.lookupDDL()
 				if !e.Contains(lookups, lookupDDL) {
 					lookups = append(lookups, lookupDDL)
 				}
@@ -213,18 +206,39 @@ func (s *Schema) InsertData(source []string) string {
 				ins += fmt.Sprintf("'',\n")
 			}
 		case "lookup":
-			ins += fmt.Sprintf("'',\n")
-			name := ""
-			switch {
-			case col.Table == "":
-				name = col.Name
-			case col.Table != "":
-				name = col.Table
+			var (
+				lookupName string
+				id			int
+				descr		string
+			)
+			if col.Table == "" {
+				lookupName = col.Name
+			} else {
+				lookupName = col.Table
 			}
-			lookupTable := GetLookupTable(name)
-			lookupTable.AddRow(0, "Descr")
-			dmp := fmt.Sprintf("col.Name: %v  col.Table: %v  col.Mask: %v  Datum: %v\n", col.Name, col.Table, col.Mask, datum)
-			Dbg += dmp
+			lookupTable := Lookups.GetTable(lookupName)
+			if !strings.Contains(Dbg, lookupName) {
+				Dbg += lookupName + "\n"
+			}
+			if lookupName != "" {
+				if datum != "" {
+					if col.Mask != "" {
+						descr = datum[len(col.Mask) + 3:]
+					} else {
+						descr = datum
+					}
+					id = lookupTable.FindDescr(descr)
+					if col.Mask != "" {
+						id,_ = strconv.Atoi(datum[:len(col.Mask)])
+					} else {
+						id = lookupTable.NextID()
+					}
+					lookupTable.AddRow(id, descr)
+				}
+				ins += fmt.Sprintf("%d,\n", id)
+			} else {
+				ins += fmt.Sprintf("%d,\n", -1)
+			}
 		}
 	}
 	// remove final comma

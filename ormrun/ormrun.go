@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"path"
 	"os"
 
 	c "github.com/carlca/bigdata/company"
 	o "github.com/carlca/bigdata/orm"
 	s "github.com/carlca/bigdata/server"
 	e "github.com/carlca/utils/essentials"
+	l "github.com/carlca/bigdata/ormlookups"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -81,6 +83,11 @@ func main() {
 		p.Printf("\r%d / %d", cr.BytesRead, fileSize)
 		// insert data into database
 		ins := schema.InsertData(record)
+		//
+		bytes := []byte(ins)
+		wd, _ := os.Getwd()
+		ioutil.WriteFile(path.Join(wd, "ins.txt"), bytes, 0755)
+		//
 		_, err = tx.Exec(ins)
 		if err != nil {
 			bytes := []byte(ins)
@@ -97,17 +104,17 @@ func main() {
 		}
 	}
 	bytes := []byte(o.Dbg)
-	ioutil.WriteFile("/users/carlca/debug3.txt", bytes, 0755)
+	ioutil.WriteFile("/users/carlca/bigdata/ormrun/dbg.txt", bytes, 0755)
 
-	dmp := ""
-	for _, table := range o.Lookups {
-		dmp += fmt.Sprintf("%s:\n\n", table.Name)
-		for _, row := range table.Rows {
-			dmp += fmt.Sprintf("%d: %s", row.ID, row.Descr)
-		}
-	}
+	// dmp := ""
+	// for _, table := range o.Lookups {
+	// 	dmp += fmt.Sprintf("%s:\n\n", table.Name)
+	// 	for _, row := range table.Rows {
+	// 		dmp += fmt.Sprintf("%d: %s", row.ID, row.Descr)
+	// 	}
+	// }
 
-	fmt.Println(dmp)
+	// fmt.Println(dmp)
 }
 
 // String implements Stringer interface for LookupTables
