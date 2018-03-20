@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	o "github.com/carlca/bigdata/orm"
@@ -20,7 +19,7 @@ func TestLookups(t *testing.T) {
 	expected = "PostTown"
 	g.Describe("GetTable", func() {
 		g.It("Should return a Table struct with the specified name", func() {
-			ReportAndAssert(g, expected, actual)
+			g.AssertEqual(expected, actual)
 		})
 	})
 
@@ -28,31 +27,7 @@ func TestLookups(t *testing.T) {
 	expected = "County"
 	g.Describe("GetTable", func() {
 		g.It("Should return a Table struct with the specified name", func() {
-			ReportAndAssert(g, expected, actual)
+			g.AssertEqual(expected, actual)
 		})
 	})
-
-}
-
-func ReportAndAssert(g *goblin.G, expected, actual string) {
-	if expected == actual {
-		PrintCheck()
-	} else {
-		PrintFail()
-	}
-	fmt.Print(MakeGray("Expected: " + expected))
-	fmt.Println(MakeGray("   Actual: " + actual))
-	g.Assert(actual).Equal(expected)
-}
-
-func PrintCheck() {
-	fmt.Print("    \033[32m\u2713\033[0m ")
-}
-
-func PrintFail() {
-	fmt.Print("    \033[31m" + "x" + "\033[0m ")
-}
-
-func MakeGray(s string) string {
-	return "\033[90m" + s + "\033[0m"
 }

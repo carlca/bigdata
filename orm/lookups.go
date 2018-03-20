@@ -9,7 +9,7 @@ type Row struct {
 // Table is one lookup table
 type Table struct {
 	Name string
-	Rows []Row
+	Rows []*Row
 }
 
 // Tables is a map of pointers to Table
